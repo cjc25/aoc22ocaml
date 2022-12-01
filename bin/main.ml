@@ -28,7 +28,7 @@ end
 let daymods =
   Int.Map.of_alist_exn
     [
-      (1, ((module Day1 : Day), (module Of_unit_day (Day1) : Printing_day)));
+      (1, ((module Day1 : Day), (module Of_int_day (Day1) : Printing_day)));
     ]
 
 type day_to_run = {
