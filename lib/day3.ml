@@ -18,7 +18,9 @@ let charpriority c =
 let charset s = String.to_list s |> Char.Set.of_list
 
 let parta =
-  List.sum (module Int) ~f:(fun sack ->
+  List.sum
+    (module Int)
+    ~f:(fun sack ->
       let sidelen = String.length sack / 2 in
       let inleft = String.prefix sack sidelen |> charset in
       let inright = String.suffix sack sidelen |> charset in
