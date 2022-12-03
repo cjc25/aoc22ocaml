@@ -8,3 +8,5 @@ module Xy : sig
 
   include Comparable.S with type t := t
 end
+
+val foldn : n:int -> init:'a -> f:('a -> 'b list -> 'a) -> 'b list -> 'a
