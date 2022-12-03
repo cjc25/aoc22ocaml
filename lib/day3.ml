@@ -18,12 +18,12 @@ let charpriority c =
 let charset s = String.to_list s |> Char.Set.of_list
 
 let parta =
-  List.fold ~init:0 ~f:(fun acc sack ->
+  List.sum (module Int) ~f:(fun sack ->
       let sidelen = String.length sack / 2 in
       let inleft = String.prefix sack sidelen |> charset in
       let inright = String.suffix sack sidelen |> charset in
       let elem = Set.inter inleft inright |> Set.min_elt_exn in
-      acc + charpriority elem)
+      charpriority elem)
 
 let%expect_test "a" =
   parta sample |> Int.to_string |> print_endline;
