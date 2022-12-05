@@ -25,6 +25,11 @@ module Of_int_day (D : Day with type result = int) : Printing_day = struct
   let partb s = D.partb s |> Int.to_string |> print_endline
 end
 
+module Of_string_day (D : Day with type result = string) : Printing_day = struct
+  let parta s = D.parta s |> print_endline
+  let partb s = D.partb s |> print_endline
+end
+
 let daymods =
   Int.Map.of_alist_exn
     [
@@ -32,6 +37,7 @@ let daymods =
       (2, ((module Day2), (module Of_int_day (Day2))));
       (3, ((module Day3), (module Of_int_day (Day3))));
       (4, ((module Day4), (module Of_int_day (Day4))));
+      (5, ((module Day5), (module Of_string_day (Day5))));
     ]
 
 type day_to_run = {
