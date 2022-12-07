@@ -39,6 +39,7 @@ let daymods =
       (4, ((module Day4), (module Of_int_day (Day4))));
       (5, ((module Day5), (module Of_string_day (Day5))));
       (6, ((module Day6), (module Of_int_day (Day6))));
+      (7, ((module Day7), (module Of_int_day (Day7))));
     ]
 
 type day_to_run = {
