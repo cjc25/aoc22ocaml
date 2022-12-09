@@ -1,7 +1,7 @@
 open Core
 
 module Xy : sig
-  type t = int * int
+  type t = int * int [@@deriving hash, sexp]
 
   val x : t -> int
   val y : t -> int

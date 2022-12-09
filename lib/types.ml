@@ -2,7 +2,7 @@ open Core
 
 module Xy = struct
   module T = struct
-    type t = int * int [@@deriving compare, sexp]
+    type t = int * int [@@deriving compare, hash, sexp]
 
     let x = fst
     let y = snd
