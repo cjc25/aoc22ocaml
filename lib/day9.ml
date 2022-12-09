@@ -9,10 +9,8 @@ let mvtowards (xf, yf) (xt, yt) =
   ( Int.clamp_exn ~min:(xf - 1) ~max:(xf + 1) xt,
     Int.clamp_exn ~min:(yf - 1) ~max:(yf + 1) yt )
 
-let parta ls =
-  List.folding_map ls
-    ~init:((0, 0), (0, 0))
-    ~f:(fun (hd, tl) l ->
+let tracktl ~len ls =
+  let hdposes = List.folding_map ls ~init:(0, 0) ~f:(fun hd l ->
       let d, ct =
         match String.split ~on:' ' l with
         | [ "U"; ct ] -> ((0, 1), Int.of_string ct)
@@ -21,29 +19,9 @@ let parta ls =
         | [ "D"; ct ] -> ((0, -1), Int.of_string ct)
         | _ -> failwith "bad line"
       in
-      List.init ct ~f:(fun i -> mv hd d ~times:(i + 1))
-      |> List.fold
-           ~init:((hd, tl), [])
-           ~f:(fun ((hd, tl), tls) nhd ->
-             if oneaway tl nhd then ((nhd, tl), tl :: tls)
-             else ((nhd, hd), hd :: tls)))
-  |> List.concat |> Types.Xy.Set.of_list |> Set.length
-
-let partb ls =
-  let hdposes =
-    List.folding_map ls ~init:(0, 0) ~f:(fun hd l ->
-        let d, ct =
-          match String.split ~on:' ' l with
-          | [ "U"; ct ] -> ((0, 1), Int.of_string ct)
-          | [ "R"; ct ] -> ((1, 0), Int.of_string ct)
-          | [ "L"; ct ] -> ((-1, 0), Int.of_string ct)
-          | [ "D"; ct ] -> ((0, -1), Int.of_string ct)
-          | _ -> failwith "bad line"
-        in
-        (mv hd d ~times:ct, List.init ct ~f:(fun i -> mv hd d ~times:(i + 1))))
-    |> List.concat
-  in
-  let tlposes = List.init 9 ~f:(fun _ -> (0, 0)) in
+      (mv hd d ~times:ct, List.init ct ~f:(fun i -> mv hd d ~times:(i + 1))))
+  |> List.concat in
+  let tlposes = List.init len ~f:(fun _ -> (0, 0)) in
   List.folding_map hdposes ~init:tlposes ~f:(fun tlposes nh ->
       let tl, tlposes =
         List.fold_map tlposes ~init:nh ~f:(fun target p ->
@@ -54,6 +32,10 @@ let partb ls =
       in
       (tlposes, tl))
   |> Types.Xy.Set.of_list |> Set.length
+
+let parta ls = tracktl ~len:1 ls
+
+let partb ls = tracktl ~len:9 ls
 
 let sample = {|R 4
 U 4
