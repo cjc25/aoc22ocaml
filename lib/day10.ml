@@ -2,35 +2,30 @@ open! Core
 
 type result = unit
 
-let parta ls =
+let reg_at_cycles ls =
   List.folding_map ls ~init:1 ~f:(fun reg l ->
       match String.split l ~on:' ' with
       | [ "noop" ] -> (reg, [ reg ])
       | [ "addx"; sz ] -> (reg + Int.of_string sz, [ reg; reg ])
-      | _ -> failwith "badline")
+      | _ -> failwith "bad line")
   |> List.concat
+
+let parta ls =
+  reg_at_cycles ls
   |> List.foldi ~init:0 ~f:(fun i sum reg ->
-         if (i + 1 - 20) % 40 = 0 && i + 1 < 221 then sum + (reg * (i + 1))
+         if (i + 1 - 20) % 40 = 0 then sum + (reg * (i + 1))
          else sum)
   |> Int.to_string |> print_endline
 
 let partb ls =
-  let locs =
-    List.folding_map ls ~init:1 ~f:(fun reg l ->
-        match String.split l ~on:' ' with
-        | [ "noop" ] -> (reg, [ (reg - 1, reg, reg + 1) ])
-        | [ "addx"; sz ] ->
-            ( reg + Int.of_string sz,
-              [ (reg - 1, reg, reg + 1); (reg - 1, reg, reg + 1) ] )
-        | _ -> failwith "badline")
-    |> List.concat
-  in
-  List.iteri locs ~f:(fun i (l, c, r) ->
-      let p = i % 40 in
-      if p = l || p = c || p = r then print_string "#" else print_string ".";
-      if (i + 1) % 40 = 0 then print_endline "" else ())
+  reg_at_cycles ls
+  |> List.iteri ~f:(fun i c ->
+         let p = i % 40 in
+         if p = c - 1 || p = c || p = c + 1 then print_string "#"
+         else print_string ".";
+         if (i + 1) % 40 = 0 then print_endline "" else ())
 
-let _sample =
+let sample =
   {|addx 15
 addx -11
 addx 6
@@ -179,10 +174,17 @@ noop
 noop|}
   |> String.split ~on:'\n'
 
-(* let%expect_test "a" =
-  parta sample |> Int.to_string |> print_endline;
-  [%expect {| 13140 |}] *)
+let%expect_test "a" =
+  parta sample;
+  [%expect {| 13140 |}]
 
-(* let%expect_test "b" =
-   partb sample |> Int.to_string |> print_endline;
-   [%expect {| 1 |}] *)
+let%expect_test "b" =
+  partb sample;
+  [%expect {|
+##..##..##..##..##..##..##..##..##..##..
+###...###...###...###...###...###...###.
+####....####....####....####....####....
+#####.....#####.....#####.....#####.....
+######......######......######......####
+#######.......#######.......#######.....
+   |}]
