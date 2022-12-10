@@ -1,6 +1,5 @@
 open! Core
-
-type result = int
+open Types
 
 let sample =
   {|vJrwpWtwJgWrhcsFMMfFFhFp
@@ -17,28 +16,31 @@ let charpriority c =
 
 let charset s = String.to_list s |> Char.Set.of_list
 
-let parta =
+let parta ls =
   List.sum
     (module Int)
+    ls
     ~f:(fun sack ->
       let sidelen = String.length sack / 2 in
       let inleft = String.prefix sack sidelen |> charset in
       let inright = String.suffix sack sidelen |> charset in
       let elem = Set.inter inleft inright |> Set.min_elt_exn in
       charpriority elem)
+  |> Printer.of_int
 
 let%expect_test "a" =
-  parta sample |> Int.to_string |> print_endline;
+  parta sample |> Printer.print;
   [%expect {| 157 |}]
 
-let partb =
-  Types.foldn ~n:3 ~init:0 ~f:(fun acc sacks ->
+let partb ls =
+  Types.foldn ls ~n:3 ~init:0 ~f:(fun acc sacks ->
       let badge =
         List.map sacks ~f:charset |> List.reduce ~f:Set.inter
         |> Option.value_exn |> Set.min_elt_exn
       in
       acc + charpriority badge)
+  |> Printer.of_int
 
 let%expect_test "b" =
-  partb sample |> Int.to_string |> print_endline;
+  partb sample |> Printer.print;
   [%expect {| 70 |}]

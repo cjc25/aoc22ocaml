@@ -1,4 +1,2 @@
-type result = int
-
-val parta : string list -> result
-val partb : string list -> result
+val parta : string list -> Types.Printer.t
+val partb : string list -> Types.Printer.t

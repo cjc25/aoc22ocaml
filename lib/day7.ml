@@ -1,6 +1,5 @@
 open! Core
-
-type result = int
+open Types
 
 let updatemap d m sz =
   String.concat d
@@ -34,12 +33,14 @@ let parta ls =
   let tree = buildtree ls in
   Map.fold tree ~init:0 ~f:(fun ~key:_ ~data ct ->
       if data <= 100000 then ct + data else ct)
+  |> Printer.of_int
 
 let partb ls =
   let tree = buildtree ls in
   let to_remove = Map.find_exn tree "" - 40000000 in
   Map.fold tree ~init:40000000 ~f:(fun ~key:_ ~data sz ->
       if data >= to_remove && data < sz then data else sz)
+  |> Printer.of_int
 
 let sample =
   {|$ cd /
@@ -68,9 +69,9 @@ $ ls
   |> String.split ~on:'\n'
 
 let%expect_test "a" =
-   parta sample |> Int.to_string |> print_endline;
-   [%expect {| 95437 |}]
+  parta sample |> Printer.print;
+  [%expect {| 95437 |}]
 
 let%expect_test "b" =
-  partb sample |> Int.to_string |> print_endline;
+  partb sample |> Printer.print;
   [%expect {| 24933642 |}]

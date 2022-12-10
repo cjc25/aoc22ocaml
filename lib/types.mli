@@ -1,5 +1,14 @@
 open Core
 
+module Printer : sig
+  type t
+
+  val of_int : int -> t
+  val of_unit : unit -> t
+  val of_string : string -> t
+  val print : t -> unit
+end
+
 module Xy : sig
   type t = int * int [@@deriving hash, sexp]
 

@@ -1,6 +1,5 @@
 open! Core
-
-type result = int
+open Types
 
 let sample = {|A Y
 B X
@@ -19,10 +18,10 @@ let score1 line =
   | [ "C"; "Z" ] -> 6
   | _ -> failwith "bad line"
 
-let parta = List.sum (module Int) ~f:score1
+let parta ls = List.sum (module Int) ls ~f:score1 |> Printer.of_int
 
 let%expect_test "a" =
-  parta sample |> Int.to_string |> print_endline;
+  parta sample |> Printer.print;
   [%expect {| 15 |}]
 
 let score2 line =
@@ -38,8 +37,8 @@ let score2 line =
   | [ "C"; "Z" ] -> 7
   | _ -> failwith "bad line"
 
-let partb = List.sum (module Int) ~f:score2
+let partb ls = List.sum (module Int) ls ~f:score2 |> Printer.of_int
 
 let%expect_test "b" =
-  partb sample |> Int.to_string |> print_endline;
+  partb sample |> Printer.print;
   [%expect {| 12 |}]

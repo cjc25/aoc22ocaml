@@ -2,60 +2,34 @@ open! Core
 open! Core_bench
 open! Async
 open Aoc22ocaml
+open Types
 
 module type Day = sig
-  type result
-
-  val parta : string list -> result
-  val partb : string list -> result
-end
-
-module type Printing_day = sig
-  val parta : string list -> unit
-  val partb : string list -> unit
-end
-
-module Of_unit_day (D : Day with type result = unit) : Printing_day = struct
-  let parta = D.parta
-  let partb = D.partb
-end
-
-module Of_int_day (D : Day with type result = int) : Printing_day = struct
-  let parta s = D.parta s |> Int.to_string |> print_endline
-  let partb s = D.partb s |> Int.to_string |> print_endline
-end
-
-module Of_string_day (D : Day with type result = string) : Printing_day = struct
-  let parta s = D.parta s |> print_endline
-  let partb s = D.partb s |> print_endline
+  val parta : string list -> Printer.t
+  val partb : string list -> Printer.t
 end
 
 let daymods =
   Int.Map.of_alist_exn
     [
-      (1, ((module Day1 : Day), (module Of_int_day (Day1) : Printing_day)));
-      (2, ((module Day2), (module Of_int_day (Day2))));
-      (3, ((module Day3), (module Of_int_day (Day3))));
-      (4, ((module Day4), (module Of_int_day (Day4))));
-      (5, ((module Day5), (module Of_string_day (Day5))));
-      (6, ((module Day6), (module Of_int_day (Day6))));
-      (7, ((module Day7), (module Of_int_day (Day7))));
-      (8, ((module Day8), (module Of_int_day (Day8))));
-      (9, ((module Day9), (module Of_int_day (Day9))));
-      (10, ((module Day10), (module Of_unit_day (Day10))));
+      (1, (module Day1 : Day));
+      (2, (module Day2));
+      (3, (module Day3));
+      (4, (module Day4));
+      (5, (module Day5));
+      (6, (module Day6));
+      (7, (module Day7));
+      (8, (module Day8));
+      (9, (module Day9));
+      (10, (module Day10));
     ]
 
-type day_to_run = {
-  day : (module Day);
-  printing_day : (module Printing_day);
-  infile : string;
-  part : [ `A | `B ];
-}
+type day_to_run = { day : (module Day); infile : string; part : [ `A | `B ] }
 
 let day_arg =
   Command.Arg_type.create (fun s ->
       let daystr = String.length s - 1 |> String.prefix s in
-      let day, printing_day = Int.of_string daystr |> Map.find_exn daymods in
+      let day = Int.of_string daystr |> Map.find_exn daymods in
       let infile = "day" ^ daystr in
       let part =
         match String.suffix s 1 with
@@ -63,7 +37,7 @@ let day_arg =
         | "b" | "B" -> `B
         | _ -> failwithf "bad day arg %s" s ()
       in
-      { day; printing_day; infile; part })
+      { day; infile; part })
 
 let day_param =
   let open Command.Param in
@@ -74,18 +48,20 @@ let base_dir_param =
   flag ~doc:"input files directory" "input-dir"
     (optional_with_default "inputs" string)
 
-let runday b { day = _; printing_day = (module D); infile; part } =
+let runday b { day = (module D); infile; part } =
   let f = Filename.concat b infile in
   let%map lines = Reader.file_lines f in
-  match part with `A -> D.parta lines | `B -> D.partb lines
+  match part with
+  | `A -> D.parta lines |> Printer.print
+  | `B -> D.partb lines |> Printer.print
 
 let aoc_cmd =
   Command.async ~summary:"run advent of code!"
     (let%map_open.Command d = day_param and base_dir = base_dir_param in
      fun () -> Deferred.List.iter d ~f:(fun d -> runday base_dir d))
 
-(** [bm_of_day basedir day_to_run] returns a benchmark for [Bench.Test.create_with_initialization] *)
-let make_benchmark b { day = (module D); printing_day = _; infile; part } =
+(** [make_benchmark basedir day_to_run] returns a benchmark for [Bench.Test.create_with_initialization] *)
+let make_benchmark b { day = (module D); infile; part } =
   let partstr = match part with `A -> "a" | `B -> "b" in
   let name = infile ^ partstr in
   let f = match part with `A -> D.parta | `B -> D.partb in

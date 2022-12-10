@@ -1,6 +1,5 @@
 open! Core
-
-type result = unit
+open Types
 
 let reg_at_cycles ls =
   List.folding_map ls ~init:1 ~f:(fun reg l ->
@@ -13,9 +12,8 @@ let reg_at_cycles ls =
 let parta ls =
   reg_at_cycles ls
   |> List.foldi ~init:0 ~f:(fun i sum reg ->
-         if (i + 1 - 20) % 40 = 0 then sum + (reg * (i + 1))
-         else sum)
-  |> Int.to_string |> print_endline
+         if (i + 1 - 20) % 40 = 0 then sum + (reg * (i + 1)) else sum)
+  |> Printer.of_int
 
 let partb ls =
   reg_at_cycles ls
@@ -24,6 +22,7 @@ let partb ls =
          if p = c - 1 || p = c || p = c + 1 then print_string "#"
          else print_string ".";
          if (i + 1) % 40 = 0 then print_endline "" else ())
+  |> Printer.of_unit
 
 let sample =
   {|addx 15
@@ -175,12 +174,13 @@ noop|}
   |> String.split ~on:'\n'
 
 let%expect_test "a" =
-  parta sample;
+  parta sample |> Printer.print;
   [%expect {| 13140 |}]
 
 let%expect_test "b" =
-  partb sample;
-  [%expect {|
+  partb sample |> Printer.print;
+  [%expect
+    {|
 ##..##..##..##..##..##..##..##..##..##..
 ###...###...###...###...###...###...###.
 ####....####....####....####....####....

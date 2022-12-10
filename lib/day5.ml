@@ -1,6 +1,5 @@
 open! Core
-
-type result = string
+open Types
 
 let buildstacks ls =
   let width = (List.hd_exn ls |> String.length |> succ) / 4 in
@@ -33,7 +32,8 @@ let parta ls =
         stacks.(dst) <- hd @ stacks.(dst);
         stacks.(src) <- tl
       done);
-  Array.map stacks ~f:List.hd_exn |> Array.to_list |> String.of_char_list
+  Array.map stacks ~f:List.hd_exn
+  |> Array.to_list |> String.of_char_list |> Printer.of_string
 
 let partb ls =
   let stacks, instrs = preprocess ls in
@@ -41,7 +41,8 @@ let partb ls =
       let hd, tl = List.split_n stacks.(src) ct in
       stacks.(dst) <- hd @ stacks.(dst);
       stacks.(src) <- tl);
-  Array.map stacks ~f:List.hd_exn |> Array.to_list |> String.of_char_list
+  Array.map stacks ~f:List.hd_exn
+  |> Array.to_list |> String.of_char_list |> Printer.of_string
 
 let sample =
   {|    [D]    
@@ -56,9 +57,9 @@ move 1 from 1 to 2|}
   |> String.split ~on:'\n'
 
 let%expect_test "a" =
-  parta sample |> print_endline;
+  parta sample |> Printer.print;
   [%expect {| CMZ |}]
 
 let%expect_test "b" =
-  partb sample |> print_endline;
+  partb sample |> Printer.print;
   [%expect {| MCD |}]

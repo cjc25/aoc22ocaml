@@ -1,6 +1,5 @@
 open! Core
-
-type result = int
+open Types
 
 let solve ct line =
   let rec check seen l =
@@ -10,14 +9,14 @@ let solve ct line =
   in
   check 0 line
 
-let parta ls = List.hd_exn ls |> String.to_list |> solve 4
-let partb ls = List.hd_exn ls |> String.to_list |> solve 14
+let parta ls = List.hd_exn ls |> String.to_list |> solve 4 |> Printer.of_int
+let partb ls = List.hd_exn ls |> String.to_list |> solve 14 |> Printer.of_int
 let sample = {|mjqjpqmgbljsphdztnvjfqwrcgsmlb|} |> String.split ~on:'\n'
 
 let%expect_test "a" =
-  parta sample |> Int.to_string |> print_endline;
+  parta sample |> Printer.print;
   [%expect {| 7 |}]
 
 let%expect_test "b" =
-  partb sample |> Int.to_string |> print_endline;
+  partb sample |> Printer.print;
   [%expect {| 19 |}]

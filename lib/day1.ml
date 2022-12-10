@@ -1,6 +1,5 @@
 open! Core
-
-type result = int
+open Types
 
 let sample =
   {|1000
@@ -23,16 +22,18 @@ let calorie_counts_decreasing bags =
   List.map bags ~f:(List.sum (module Int) ~f:Int.of_string)
   |> List.sort ~compare:(Fn.flip Int.compare)
 
-let parta ls = Input.to_sections ls |> calorie_counts_decreasing |> List.hd_exn
+let parta ls =
+  Input.to_sections ls |> calorie_counts_decreasing |> List.hd_exn
+  |> Printer.of_int
 
 let%expect_test "a" =
-  parta sample |> Int.to_string |> print_endline;
+  parta sample |> Printer.print;
   [%expect {| 24000 |}]
 
 let partb ls =
   let sorted = Input.to_sections ls |> calorie_counts_decreasing in
-  List.take sorted 3 |> List.sum (module Int) ~f:Fn.id
+  List.take sorted 3 |> List.sum (module Int) ~f:Fn.id |> Printer.of_int
 
 let%expect_test "b" =
-  partb sample |> Int.to_string |> print_endline;
+  partb sample |> Printer.print;
   [%expect {| 45000 |}]

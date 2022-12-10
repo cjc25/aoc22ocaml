@@ -1,5 +1,18 @@
 open Core
 
+module Printer = struct
+  type t = Int : int -> t | String : string -> t | Unit : t
+
+  let of_int i = Int i
+  let of_string s = String s
+  let of_unit _ = Unit
+
+  let print = function
+    | Int i -> Int.to_string i |> print_endline
+    | String s -> print_endline s
+    | Unit -> ()
+end
+
 module Xy = struct
   module T = struct
     type t = int * int [@@deriving compare, hash, sexp]

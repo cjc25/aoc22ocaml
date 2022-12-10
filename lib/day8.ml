@@ -1,6 +1,6 @@
 open! Core
+open Types
 
-type result = int
 type view = { line : char list; toxy : int -> Types.Xy.t }
 
 let parta ls =
@@ -33,7 +33,7 @@ let parta ls =
           if Char.(tree > maxht) then (tree, v.toxy i |> Set.add s)
           else (maxht, s))
       |> snd)
-  |> Set.length
+  |> Set.length |> Printer.of_int
 
 let partb ls =
   let tbl = Hashtbl.create (module Types.Xy) in
@@ -73,7 +73,7 @@ let partb ls =
       bestscore := Int.max !bestscore (!upct * !downct * !leftct * !rightct)
     done
   done;
-  !bestscore
+  !bestscore |> Printer.of_int
 
 let sample = {|30373
 25512
@@ -82,9 +82,9 @@ let sample = {|30373
 35390|} |> String.split ~on:'\n'
 
 let%expect_test "a" =
-  parta sample |> Int.to_string |> print_endline;
+  parta sample |> Printer.print;
   [%expect {| 21 |}]
 
 let%expect_test "b" =
-  partb sample |> Int.to_string |> print_endline;
+  partb sample |> Printer.print;
   [%expect {| 8 |}]
