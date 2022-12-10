@@ -10,26 +10,25 @@ module type Day = sig
 end
 
 let daymods =
-  Int.Map.of_alist_exn
-    [
-      (1, (module Day1 : Day));
-      (2, (module Day2));
-      (3, (module Day3));
-      (4, (module Day4));
-      (5, (module Day5));
-      (6, (module Day6));
-      (7, (module Day7));
-      (8, (module Day8));
-      (9, (module Day9));
-      (10, (module Day10));
-    ]
+  [|
+    (module Day1 : Day);
+    (module Day2);
+    (module Day3);
+    (module Day4);
+    (module Day5);
+    (module Day6);
+    (module Day7);
+    (module Day8);
+    (module Day9);
+    (module Day10);
+  |]
 
 type day_to_run = { day : (module Day); infile : string; part : [ `A | `B ] }
 
 let day_arg =
   Command.Arg_type.create (fun s ->
       let daystr = String.length s - 1 |> String.prefix s in
-      let day = Int.of_string daystr |> Map.find_exn daymods in
+      let day = Int.of_string daystr - 1 |> Array.get daymods in
       let infile = "day" ^ daystr in
       let part =
         match String.suffix s 1 with
