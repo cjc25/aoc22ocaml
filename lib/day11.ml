@@ -9,40 +9,37 @@ type monkey = {
 }
 
 let to_last_elem ~sep v =
-  Input.split_on_string v ~sep |> List.tl_exn |> List.hd_exn |> Int.of_string
+  let s = Input.split_on_string v ~sep in
+  List.nth_exn s 1 |> Int.of_string
 
 let mk_monkey ls =
   match ls with
   | [ _; is; op; test; t; f ] ->
       let items =
-        Input.split_on_string is ~sep:": "
-        |> List.tl_exn |> List.hd_exn
+        let s = Input.split_on_string is ~sep:": " in
+        List.nth_exn s 1
         |> Input.split_on_string ~sep:", "
         |> List.map ~f:Int.of_string
       in
       let op =
         match
-          Input.split_on_string op ~sep:": new = "
-          |> List.tl_exn |> List.hd_exn
-          |> Input.split_on_string ~sep:" "
+          let s = Input.split_on_string op ~sep:": new = " in
+          List.nth_exn s 1 |> Input.split_on_string ~sep:" "
         with
         | [ a; op; b ] ->
             fun old ->
               let left = if String.(a = "old") then old else Int.of_string a in
               let right = if String.(b = "old") then old else Int.of_string b in
-              let res =
-                if String.(op = "+") then left + right else left * right
-              in
-              if res < old then printf "%d -> %d\n" old res;
-              res
+              let res = if String.(op = "+") then left + right else left * right in
+              res % (2 * 3 * 5 * 7 * 11 * 13 * 17 * 19 * 23)
         | _ -> failwith "bad op"
       in
       let tmon = to_last_elem t ~sep:" monkey " in
       let fmon = to_last_elem f ~sep:" monkey " in
       let to_monkey ~score =
         let div =
-          Input.split_on_string test ~sep:" by "
-          |> List.tl_exn |> List.hd_exn |> Int.of_string
+          let s = Input.split_on_string test ~sep:" by " in
+          List.nth_exn s 1 |> Int.of_string
         in
         if score % div = 0 then tmon else fmon
       in
@@ -74,7 +71,6 @@ let do_monkey2 ms id =
   List.iter m.items ~f:(fun score ->
       let score = m.op score in
       let tom = m.to_monkey ~score in
-      let score = score % (2 * 3 * 5 * 7 * 11 * 13 * 17 * 19 * 23) in
       ms.(tom) <- { (ms.(tom)) with items = ms.(tom).items @ [ score ] });
   ms.(id) <-
     { m with items = []; inspections = m.inspections + List.length m.items }
@@ -90,7 +86,7 @@ let partb ls =
   Array.sort ms ~compare:(fun l r -> Int.compare r.inspections l.inspections);
   ms.(0).inspections * ms.(1).inspections |> Printer.of_int
 
-let _sample =
+let sample =
   {|Monkey 0:
   Starting items: 79, 98
   Operation: new = old * 19
@@ -121,9 +117,9 @@ Monkey 3:
   |> String.split ~on:'\n'
 
 let%expect_test "a" =
-  parta _sample |> Printer.print;
+  parta sample |> Printer.print;
   [%expect {| 10605 |}]
 
 let%expect_test "b" =
-  partb _sample |> Printer.print;
+  partb sample |> Printer.print;
   [%expect {| 2713310158 |}]
