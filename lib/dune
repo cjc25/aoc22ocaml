@@ -1,6 +1,6 @@
 (library
  (name aoc22ocaml)
  (inline_tests)
- (libraries async core ppx_expect)
+ (libraries async containers core ppx_expect)
  (preprocess
   (pps ppx_expect ppx_compare ppx_hash ppx_sexp_conv)))
