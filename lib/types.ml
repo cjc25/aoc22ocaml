@@ -23,6 +23,36 @@ module Xy = struct
 
   include T
   include Comparable.Make (T)
+  include Hashable.Make(T)
+end
+
+module Xyz = struct
+  module T = struct
+    type t = int * int * int [@@deriving compare, hash, sexp]
+
+    let x (x, _, _) = x
+    let y (_, y, _) = y
+    let z (_, _, z) = z
+  end
+
+  include T
+  include Comparable.Make (T)
+  include Hashable.Make(T)
+end
+
+module Xyzw = struct
+  module T = struct
+    type t = int * int * int * int [@@deriving compare, hash, sexp]
+
+    let x (x, _, _, _) = x
+    let y (_, y, _, _) = y
+    let z (_, _, z, _) = z
+    let w (_, _, _, w) = w
+  end
+
+  include T
+  include Comparable.Make (T)
+  include Hashable.Make(T)
 end
 
 let rec foldn ~n ~init ~f l =
