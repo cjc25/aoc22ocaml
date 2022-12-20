@@ -43,3 +43,5 @@ module Xyzw : sig
 end
 
 val foldn : n:int -> init:'a -> f:('a -> 'b list -> 'a) -> 'b list -> 'a
+
+val zip3_exn : 'a list -> 'b list -> 'c list -> ('a * 'b * 'c) list

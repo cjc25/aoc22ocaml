@@ -23,7 +23,7 @@ module Xy = struct
 
   include T
   include Comparable.Make (T)
-  include Hashable.Make(T)
+  include Hashable.Make (T)
 end
 
 module Xyz = struct
@@ -37,7 +37,7 @@ module Xyz = struct
 
   include T
   include Comparable.Make (T)
-  include Hashable.Make(T)
+  include Hashable.Make (T)
 end
 
 module Xyzw = struct
@@ -52,7 +52,7 @@ module Xyzw = struct
 
   include T
   include Comparable.Make (T)
-  include Hashable.Make(T)
+  include Hashable.Make (T)
 end
 
 let rec foldn ~n ~init ~f l =
@@ -65,3 +65,14 @@ let rec foldn ~n ~init ~f l =
   | tl ->
       let init = f init curr in
       foldn ~n ~init ~f tl
+
+let zip3_exn a b c =
+  let rec f acc a b c =
+    match (a, b, c) with
+    | [], [], [] -> List.rev acc
+    | a :: atl, b :: btl, c :: ctl ->
+        let acc = (a, b, c) :: acc in
+        f acc atl btl ctl
+    | _ -> failwith "uneven inputs"
+  in
+  f [] a b c

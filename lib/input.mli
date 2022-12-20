@@ -9,3 +9,5 @@ val to_tokens : ?on:char -> string -> string list
 val split_on_string : string -> sep:string -> string list
 (** [split_on_string s ~sep] splits [s] on the sequence of chars [sep]. It does
     so greedily. I.e. [split_on_string "abbbd" ~sep:"bb"] results in ["a"; "bd"]*)
+
+val token_ints : string -> int list

@@ -21,3 +21,7 @@ let to_tokens ?(on = ' ') line =
 let split_on_string s ~sep =
   let p = String.Search_pattern.create sep in
   String.Search_pattern.split_on p s
+
+let token_ints line =
+  to_tokens line
+  |> List.filter_map ~f:(fun t -> Option.try_with (fun () -> Int.of_string t))
