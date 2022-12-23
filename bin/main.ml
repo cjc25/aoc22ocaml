@@ -32,6 +32,7 @@ let daymods =
     (module Day19);
     (module Day20);
     (module Day21);
+    (module Day22);
   |]
 
 type day_to_run = { day : (module Day); infile : string; part : [ `A | `B ] }
